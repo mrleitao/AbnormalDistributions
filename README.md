@@ -26,3 +26,9 @@ The data used for our crime statistics were complied using reverse geocoding met
 To compile this data, we used Amazon Web Services utilizing their free virtual computers to run this reverse geo coding.
 
 All the methods and code used for this process are located as part of this repository. Full data file to big to upload, contact me if you want access.  R Code Will Be Uploaded within 24 Hours
+
+Extra Data Visualization:
+All Variables Included With The Data:
+https://public.tableau.com/profile/daniel.larranaga#!/vizhome/DataJam2018-PiecesoftheStory/PiecesoftheStory?publish=yes
+Factor Scores Based On Full Data Sets Only:
+https://public.tableau.com/profile/daniel.larranaga#!/vizhome/DataJam2018-FactorScores/53Zips?publish=yes
