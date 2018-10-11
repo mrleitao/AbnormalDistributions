@@ -30,5 +30,6 @@ All the methods and code used for this process are located as part of this repos
 Extra Data Visualization:
 All Variables Included With The Data:
 https://public.tableau.com/profile/daniel.larranaga#!/vizhome/DataJam2018-PiecesoftheStory/PiecesoftheStory?publish=yes
+
 Factor Scores Based On Full Data Sets Only:
 https://public.tableau.com/profile/daniel.larranaga#!/vizhome/DataJam2018-FactorScores/53Zips?publish=yes
