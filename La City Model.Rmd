@@ -1,0 +1,43 @@
+---
+title: "LA City Model"
+author: "Abnormal Distributions"
+date: "October 10, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Import the Data and load required packages
+```{r import_Data}
+if(!require(lavaan))   {install.packages("lavaan")}
+if(!require(semPlot))  {install.packages("semPlot")}
+
+
+laCityData = read.csv("https://raw.githubusercontent.com/mrleitao/AbnormalDistributions/master/Aggregated%20Data%20Set%20-%20Permit%20-%20Slim%20-%20LA%20Only.csv", header=TRUE)
+```
+
+
+# Run the Model
+This model is based off of theory found in Witters, D. (2016).
+```{r semmodel}
+biFactorModel = "Health =~ Health.Clinics + Mental.Health.Centers + Public.Health.Programs + Mental.Health.Counceling
+                Community.Wellness =~ Unemployment.Rate + Violent.Crime.STD + Property.Crime.STD + Teen.Pregnancy.Rate + Percent.Drop.Out
+                Community.Wellness ~ Health"
+
+
+biFactor = sem(biFactorModel, data = na.omit(laCityData))
+summary(biFactor, fit.measures=TRUE, standardized=TRUE)
+
+semPaths(biFactor, what = "stand", rotation = 2)
+
+
+### THIS CODE IS IF YOU WANT TO OUTPUT THE FACTOR LOADING SCORES TO A CSV
+## zip.scores = data.frame(lavPredict(biFactor))
+## write.csv(zip.scores, "zipscores.csv")
+#3 usableData = na.omit(laCityData)
+#3 rownames(useableData) = c(1:53)
+## rownames(useableData)
+## sort( merge.data.frame(zip.scores, useableData, by = "row.names"))
+```
