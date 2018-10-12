@@ -1,0 +1,73 @@
+---
+title: "DataJam 2018"
+author: "Abnormal Distributions"
+date: "October 6, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+This is an R-Markdown file discirbing how to reverse-GeoCode the Crime data provided by LA City to include zip-codes. I had pre-proccessed the data to include only the columns that were relevent to the project that we were doing, which included dividing the "Location" column into "lat" (longitude) and "long" (longitude) data [, yes.... i mixed longitiude and latitude up and it took me a long time to figure that out].
+
+
+# Load Packages
+```{r load_packages}
+if(!require(foreign)) {install.packages("foreign")}
+if(!require(revgeo)) {install.packages("revgeo")}
+
+```
+
+#Select and import the crime data you want to reverse GeoCode (this must be a .CSV file for this code to work)
+it also has to be pre-processed so that there are columns named "long" (latitude) and "lat" (longitude) if you want it to run right. the first line in this line of code in this chunk will open a file selecting window that wil let you import a .CSV to the workspace.
+```{r import_crime_data}
+crimeData = file.choose()
+crimeDataFrame = read.csv(crimeData)
+
+```
+
+# Reverse-GeocCode crimes by Zip
+this chunk of code is meant to reverse geocode crimes with their zipcodes in them. it is designed to separate the code into 1000 managable chunks, but even that overran the RAM on every individual PC i tried to run it on. so i ended up chunking the data to run on separate AWS servers and changing the "0:1000" part to handle it and runing it on 20 separate instances.... even still, ONLY the 2014 data took 3 maunual reset iterations because the RAM was maxed...
+```{r recode_Locations}
+crimeDataFrame$long = as.numeric(as.character(crimeDataFrame$long))
+
+total = nrow(crimeDataFrame)
+part = as.integer(total/1000)
+iter = 0
+fileName = paste("crimedata ", iter, " of 1000.csv", sep = "")
+write.csv(crimeDataFrame, fileName)
+for (iter in 0:1000){
+  if(!require(revgeo)) {install.packages("revgeo")}
+  fileName = paste("crimedata ", iter, " of 1000.csv", sep = "")
+  for(r in (iter*part):((iter+1)*part)) {
+    crimeDataFrame$zip[r] = as.numeric(substring(revgeo(crimeDataFrame$long[r], crimeDataFrame$lat[r], output = "hash", item="zip"),1,5))
+    
+    cat("row: ", r, "\n", as.character(100*r/total, "%\n"))
+  }
+  write.csv(crimeDataFrame[(iter*part):((iter+1)*part) ,], fileName)
+  gc() ## this is supposed to clear the RAM to keep the file running.... it didn't work maybe you can think of a better solution
+}
+
+
+```
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+myNestedList <- list(A = list(`0` = c(`1` = 10, `2` = 20, `3` = 30, `4` = 72),
+                              `1` = c(`1` = 15, `2` = 9, `3` = 7)),
+                     B = list(`0` = c(A = 11, B = 12, C = 13),
+                              `1` = c(X = 14, Y = 15, Z = 16)))
+
+# Run the following and see what you come up with....
+lapply(unlist(myNestedList, recursive = FALSE), `[`, 1)
+lapply(unlist(myNestedList, recursive = FALSE), `[[`, 1)
+sapply(unlist(myNestedList, recursive = FALSE), `[[`, 1)
+rapply(myNestedList, f=`[[`, ...=1, how="unlist")
+myNestedList
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
